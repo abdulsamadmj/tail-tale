@@ -13,6 +13,10 @@ import { useSession } from 'next-auth/react'
 import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, serverTimestamp, setDoc } from 'firebase/firestore'
 import { db } from '../firebase'
 import Moment from 'react-moment'
+import { postModalState, tailTaleModalState } from '../atoms/modalAtom'
+import { atom, useRecoilState } from 'recoil'
+import PostModal from './PostModal'
+import Temp from '../components/Temp'
 
 function Post({ id, username, userImage, title, tale, tailStory }) {
     const { data: session } = useSession()
@@ -20,6 +24,8 @@ function Post({ id, username, userImage, title, tale, tailStory }) {
     const [comments, setComments] = useState([])
     const [likes, setLikes] = useState([])
     const [hasLiked, setHasLiked] = useState(false)
+    const [openPost, setOpenPost] = useRecoilState(postModalState(id))
+    const [openTail, setOpenTail] = useRecoilState(tailTaleModalState(id))
 
     useEffect(() => onSnapshot(query(
         collection(db, 'posts', id, 'comments'),
@@ -90,8 +96,15 @@ function Post({ id, username, userImage, title, tale, tailStory }) {
                                 <HeartIcon onClick={likePost} className='postBtn' />
                             )}
 
-                            <ChatIcon className='postBtn' />
-                            {tailStory && <ReplyIcon className='postBtn rotate-180' />}
+                            <ChatIcon className='postBtn' onClick={() => {
+                                
+                                setOpenPost(true)
+                                
+                            }} />
+                            {tailStory && <ReplyIcon className='postBtn rotate-180' onClick={() => {
+
+                                setOpenTail(true)
+                            }} />}
                         </div>
                         <div className='flex space-x-3'>
                             <PaperAirplaneIcon className='postBtn rotate-45' />
