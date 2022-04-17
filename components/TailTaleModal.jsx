@@ -12,7 +12,6 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
     const [openTail, setOpenTail] = useRecoilState(tailTaleModalState(id))
     const filePickerRef = useRef(null)
     const storyRef = useRef(null)
-    const titleRef = useRef(null)
     const tailStoryRef = useRef(null)
     const [loading, setLoading] = useState(false)
     const [selectedFile, setSelectedFile] = useState(null)
@@ -92,6 +91,7 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
                         <Dialog.Overlay
                             className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
                     </Transition.Child>
+                    {/* used to scenter the modal components */}
                     <span
                         className='hidden sm:inline-block sm:align-middle sm:h-screen'
                         aria-hidden="true">
@@ -116,9 +116,10 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
                                             className="text-lg leading-6 font-medium text-gray-900 pb-1">
                                             Add Tail-Tale
                                         </Dialog.Title>
+                                        {/* parent tale card */}
                                         <div className='block p-5 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 shadow-gray-400' onClick={postRedirect}>
 
-                                            <div className='flex'><img src={userImage} alt="dp" className='rounded-full h-8 w-8 commentect-contain'/><p className='flex-1 font-bold'>{username}</p></div>
+                                            <div className='flex shadow-sm pb-1'><img src={userImage} alt="dp" className='rounded-full h-8 w-8 commentect-contain'/><p className='flex-1 font-bold'>{username}</p></div>
                                             <br/>
                                             <h1 className='font-bold text-md'>{title}</h1>
                                             <p className='truncate'>{tale}</p>

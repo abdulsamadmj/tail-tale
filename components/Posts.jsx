@@ -21,6 +21,7 @@ function Posts() {
                 <Post key={post.id}
                     id={post.id}
                     username={post.data().username}
+                    parentTale={post.data().parentTale}
                     userImage={post.data().profileImg}
                     title={post.data().title}
                     tale={post.data().story}

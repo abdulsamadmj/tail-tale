@@ -10,14 +10,14 @@ import {
 } from '@heroicons/react/outline'
 import { HeartIcon as HeartIconFilled } from '@heroicons/react/solid'
 import { useSession } from 'next-auth/react'
-import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, serverTimestamp, setDoc } from 'firebase/firestore'
+import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, serverTimestamp, setDoc, where } from 'firebase/firestore'
 import { db } from '../firebase'
 import Moment from 'react-moment'
 import { postModalState, tailTaleModalState } from '../atoms/modalAtom'
 import { atom, useRecoilState } from 'recoil'
 
 
-function Post({ id, username, userImage, title, tale, tailStory }) {
+function Post({ id, username, parentTale, userImage, title, tale, tailStory }) {
     const { data: session } = useSession()
     const [comment, setComment] = useState("")
     const [comments, setComments] = useState([])
@@ -25,6 +25,7 @@ function Post({ id, username, userImage, title, tale, tailStory }) {
     const [hasLiked, setHasLiked] = useState(false)
     const [openPost, setOpenPost] = useRecoilState(postModalState(id))
     const [openTail, setOpenTail] = useRecoilState(tailTaleModalState(id))
+    const [parentCard, setParentCard] = useState([])
 
     useEffect(() => onSnapshot(query(
         collection(db, 'posts', id, 'comments'),
@@ -41,6 +42,11 @@ function Post({ id, username, userImage, title, tale, tailStory }) {
         , [likes]
     )
 
+    // useEffect(() =>{ onSnapshot(query(
+    //     collection(db, 'posts'), where('id', '==', parentTale)),
+    //     (snapshot) => setParentCard(snapshot.docs))
+    //     console.log(parentCard.map(obj=>(console.log(obj))))
+    // }, [db, parentTale])
 
     const likePost = async () => {
         if (hasLiked) {
@@ -65,6 +71,10 @@ function Post({ id, username, userImage, title, tale, tailStory }) {
             timestamp: serverTimestamp(),
         })
     }
+
+    function postRedirect() {
+        alert('In Development')
+    }
     return (
         <div className='bg-white my-7 border rounded-sm'>
             {/* Header */}
@@ -76,13 +86,24 @@ function Post({ id, username, userImage, title, tale, tailStory }) {
             </div>
 
             {/* Tale */}
-            <div className='w-full mt-2 shadow-sm'>
-                <div className='w-full text-center'>
-                    <h1 className='font-bold text-xl'>{title}</h1>
+            {parentTale ?
+                <div className='block p-5 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 shadow-gray-400' onClick={postRedirect}>
+                    {parentTale}
+                    <div className='flex'><img src={userImage} alt="dp" className='rounded-full h-8 w-8 commentect-contain' /><p className='flex-1 font-bold pl-3'>{username}</p></div>
+                    <br />
+                    <h1 className='font-bold text-md'>{title}</h1>
+                    <p className='truncate'>{parentCard.map(obj => {
+                        console.log(obj);
+                    })}</p>
                 </div>
-                <div className='p-5'>
-                    <p>{tale}</p>
-                </div>
+
+                : <div className='w-full mt-2 '>
+                    <div className='w-full text-center'>
+                        <h1 className='font-bold text-xl'>{title}</h1>
+                    </div>
+                </div>}
+            <div className='p-5 shadow-sm'>
+                <p>{tale}</p>
             </div>
             {/* Buttons */}
             {session &&
@@ -96,9 +117,9 @@ function Post({ id, username, userImage, title, tale, tailStory }) {
                             )}
 
                             <ChatIcon className='postBtn' onClick={() => {
-                                
+
                                 setOpenPost(true)
-                                
+
                             }} />
                             {tailStory && <ReplyIcon className='postBtn rotate-180' onClick={() => {
 
