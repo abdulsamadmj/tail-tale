@@ -28,9 +28,19 @@ function Posts() {
                 />
                 <PostModal key={'post' + post.id}
                     id={post.id}
+                    username={post.data().username}
+                    userImage={post.data().profileImg}
+                    title={post.data().title}
+                    tale={post.data().story}
+                    tailStory={post.data().tailStory}
                 />
-                <TailTaleModal key={'tailPost'+post.id}
-                id={post.id}/>
+                <TailTaleModal key={'tailPost' + post.id}
+                    id={post.id}
+                    username={post.data().username}
+                    userImage={post.data().profileImg}
+                    title={post.data().title}
+                    tale={post.data().story}
+                    tailStory={post.data().tailStory}/>
             </>
             ))}
             {/* <PostModal/> */}

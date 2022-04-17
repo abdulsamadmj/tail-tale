@@ -18,6 +18,7 @@ function Header() {
   const { data: session, status } = useSession();
   const [open,setOpen] = useRecoilState(modalState);
   const router = useRouter();
+  
   return (
     <div className='shadow-sm border-b bg-white sticky top-0 z-50 lg:pr-12'>
       <div className='flex justify-between max-w-6xl mx-5 lg:mx-auto'>

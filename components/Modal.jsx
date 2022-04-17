@@ -112,6 +112,9 @@ function Modal() {
                                             <textarea
                                             onChange={(e)=>{
                                                 var temp=''
+                                                if(e.key==13){
+                                                    temp=temp+e.target.value+'\n'
+                                                }
                                                 temp=temp+e.target.value
                                                 setSelectedFile(temp)
                                             }}

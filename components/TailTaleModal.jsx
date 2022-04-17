@@ -1,10 +1,10 @@
-import React, { Fragment, useRef, useState } from 'react'
+import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { useRecoilState } from 'recoil'
 import { tailTaleModalState } from '../atoms/modalAtom'
 import { Dialog, Transition } from '@headlessui/react'
 import { DocumentAddIcon, DocumentIcon } from '@heroicons/react/outline'
 import { db, storage } from '../firebase'
-import { addDoc, collection, serverTimestamp, updateDoc } from 'firebase/firestore'
+import { addDoc, collection, onSnapshot, query, serverTimestamp, updateDoc, where } from 'firebase/firestore'
 import { useSession } from 'next-auth/react'
 import { getDownloadURL, uploadString } from 'firebase/storage'
 
@@ -17,17 +17,26 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
     const [loading, setLoading] = useState(false)
     const [selectedFile, setSelectedFile] = useState(null)
     const { data: session } = useSession()
+    const [post, setPost] = useState([])
+    useEffect(() => {
+        onSnapshot(query(collection(db, 'posts'), where('id','==',id)), (snapshot) => {
+            setPost(snapshot.docs)
+        })
+    }
+    , [db]);
 
+        
     const uploadPost = async () => {
         if (loading) return;
         setLoading(true);
-
+        
+        
         // 1) Create a post and add to firestore 'posts' collection
         // 2) get the post ID from it
 
         const docRef = await addDoc(collection(db, 'posts'), {
             username: session.user.username,
-            parentTale: 'dummy',
+            parentTale: id,
             story: storyRef.current.value,
             profileImg: session.user.image,
             tailStory: tailStoryRef.current.checked,
@@ -50,6 +59,10 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
         setOpenTail(false)
         setLoading(false)
         setSelectedFile(false)
+    }
+
+    function postRedirect(){
+        setOpenTail(false)
     }
 
     async function addFileToPost(e) {
@@ -100,21 +113,23 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
                                 <div>
                                     <div className="mt-3 text-center sm:mt-5">
                                         <Dialog.Title as='h3'
-                                            className="text-lg leading-6 font-medium text-gray-900">
-                                            Give Title
+                                            className="text-lg leading-6 font-medium text-gray-900 pb-1">
+                                            Add Tail-Tale
                                         </Dialog.Title>
-                                        <div>
-                                            <input
-                                                ref={titleRef}
-                                                className='rounded-md border-gray-500' type="text" />
+                                        <div className='block p-5 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 shadow-gray-400' onClick={postRedirect}>
+
+                                            <div className='flex'><img src={userImage} alt="dp" className='rounded-full h-8 w-8 commentect-contain'/><p className='flex-1 font-bold'>{username}</p></div>
+                                            <br/>
+                                            <h1 className='font-bold text-md'>{title}</h1>
+                                            <p className='truncate'>{tale}</p>
                                         </div>
                                         <div className="mt-2">
                                             <textarea
-                                            onChange={(e)=>{
-                                                var temp=''
-                                                temp=temp+e.target.value
-                                                setSelectedFile(temp)
-                                            }}
+                                                onChange={(e) => {
+                                                    var temp = ''
+                                                    temp = temp + e.target.value
+                                                    setSelectedFile(temp)
+                                                }}
                                                 ref={storyRef}
                                                 className='border-none shadow-gray-400 shadow-inner focus:ring-0 w-full text-justify rounded-md'
                                                 rows="12"
@@ -155,7 +170,6 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
                                                 htmlFor="enableTail" >Allow Tail-stories</label>
                                         </div>
                                     </div>
-
 
                                 </div>
                                 <div className='mt-5 sm:mt-6'>

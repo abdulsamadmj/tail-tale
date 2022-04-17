@@ -15,8 +15,7 @@ import { db } from '../firebase'
 import Moment from 'react-moment'
 import { postModalState, tailTaleModalState } from '../atoms/modalAtom'
 import { atom, useRecoilState } from 'recoil'
-import PostModal from './PostModal'
-import Temp from '../components/Temp'
+
 
 function Post({ id, username, userImage, title, tale, tailStory }) {
     const { data: session } = useSession()
