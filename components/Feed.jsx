@@ -1,13 +1,25 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Stories from './Stories'
 import Posts from './Posts'
 import MiniProfile from './MiniProfile'
 import Suggestions from './Suggestions'
 import { useSession } from 'next-auth/react'
+import { db } from '../firebase'
+import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, serverTimestamp, setDoc, where } from 'firebase/firestore'
 
 function Feed() {
     const { data: session } = useSession();
-
+    if(session){
+        addUser()
+    }
+    async function addUser(){
+        await setDoc(doc(db, 'users', session.user.uid), {
+            username: session.user.username,
+            fullname: session.user.name,
+            profileImg: session.user.image,
+            lastLogin: serverTimestamp(),
+        })
+    }
     return (
         <main className={`grid grid-cols-1 md:grid-cols-2 md:max-w-3xl 
     xl:grid-cols-3 xl:max-w-6xl mx-auto ${!session && "!grid-cols-1 !max-w-3xl"}`}>

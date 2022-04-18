@@ -4,7 +4,7 @@ import { modalState } from '../atoms/modalAtom'
 import { Dialog, Transition } from '@headlessui/react'
 import { DocumentAddIcon, DocumentIcon } from '@heroicons/react/outline'
 import { db, storage } from '../firebase'
-import { addDoc, collection, serverTimestamp, updateDoc } from 'firebase/firestore'
+import { addDoc, collection, doc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
 import { useSession } from 'next-auth/react'
 import { getDownloadURL, uploadString } from 'firebase/storage'
 
@@ -30,6 +30,13 @@ function Modal() {
             title: titleRef.current.value,
             story: storyRef.current.value,
             profileImg: session.user.image,
+            tailStory: tailStoryRef.current.checked,
+            timestamp: serverTimestamp()
+        })
+
+        await setDoc(doc(db, 'users',session.user.uid,'posts',docRef.id), {
+            title: titleRef.current.value,
+            story: storyRef.current.value,
             tailStory: tailStoryRef.current.checked,
             timestamp: serverTimestamp()
         })

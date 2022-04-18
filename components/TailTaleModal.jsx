@@ -1,15 +1,16 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { useRecoilState } from 'recoil'
-import { tailTaleModalState } from '../atoms/modalAtom'
+import { tailTaleModalState,postModalState } from '../atoms/modalAtom'
 import { Dialog, Transition } from '@headlessui/react'
 import { DocumentAddIcon, DocumentIcon } from '@heroicons/react/outline'
 import { db, storage } from '../firebase'
-import { addDoc, collection, onSnapshot, query, serverTimestamp, updateDoc, where } from 'firebase/firestore'
+import { addDoc, collection, doc, onSnapshot, query, serverTimestamp, setDoc, updateDoc, where } from 'firebase/firestore'
 import { useSession } from 'next-auth/react'
 import { getDownloadURL, uploadString } from 'firebase/storage'
 
 function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
     const [openTail, setOpenTail] = useRecoilState(tailTaleModalState(id))
+    const [openPost, setOpenPost] = useRecoilState(postModalState(id))
     const filePickerRef = useRef(null)
     const storyRef = useRef(null)
     const tailStoryRef = useRef(null)
@@ -28,8 +29,8 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
     const uploadPost = async () => {
         if (loading) return;
         setLoading(true);
-        
-        
+        var story=storyRef.current.value
+        var tailChecked= tailStoryRef.current.checked
         // 1) Create a post and add to firestore 'posts' collection
         // 2) get the post ID from it
 
@@ -39,6 +40,13 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
             story: storyRef.current.value,
             profileImg: session.user.image,
             tailStory: tailStoryRef.current.checked,
+            timestamp: serverTimestamp()
+        })
+
+        await setDoc(doc(db, 'users',session.user.uid,'posts',docRef.id), {
+            parentTale: id,
+            story: story,
+            tailStory: tailChecked,
             timestamp: serverTimestamp()
         })
 
@@ -62,6 +70,7 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
 
     function postRedirect(){
         setOpenTail(false)
+        setOpenPost(true)
     }
 
     async function addFileToPost(e) {

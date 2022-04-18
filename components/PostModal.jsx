@@ -2,7 +2,7 @@ import React, { Fragment, useRef, useState } from 'react'
 import { useRecoilState } from 'recoil'
 import { postModalState } from '../atoms/modalAtom'
 import { Dialog, Transition } from '@headlessui/react'
-import { DocumentAddIcon, DocumentIcon } from '@heroicons/react/outline'
+
 import { db, storage } from '../firebase'
 import { addDoc, collection, serverTimestamp, updateDoc } from 'firebase/firestore'
 import { useSession } from 'next-auth/react'

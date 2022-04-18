@@ -10,7 +10,7 @@ import {
 } from '@heroicons/react/outline'
 import { HeartIcon as HeartIconFilled } from '@heroicons/react/solid'
 import { useSession } from 'next-auth/react'
-import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, serverTimestamp, setDoc, where } from 'firebase/firestore'
+import { addDoc, collection, deleteDoc, doc, getDoc, onSnapshot, orderBy, query, serverTimestamp, setDoc, where } from 'firebase/firestore'
 import { db } from '../firebase'
 import Moment from 'react-moment'
 import { postModalState, tailTaleModalState } from '../atoms/modalAtom'
@@ -24,8 +24,9 @@ function Post({ id, username, parentTale, userImage, title, tale, tailStory }) {
     const [likes, setLikes] = useState([])
     const [hasLiked, setHasLiked] = useState(false)
     const [openPost, setOpenPost] = useRecoilState(postModalState(id))
+    const [openTailPost, setOpenTailPost] = useRecoilState(postModalState(parentTale))
     const [openTail, setOpenTail] = useRecoilState(tailTaleModalState(id))
-    const [parentCard, setParentCard] = useState([])
+    const [parentCard, setParentCard] = useState(null)
 
     useEffect(() => onSnapshot(query(
         collection(db, 'posts', id, 'comments'),
@@ -42,19 +43,24 @@ function Post({ id, username, parentTale, userImage, title, tale, tailStory }) {
         , [likes]
     )
 
-    // useEffect(() =>{ onSnapshot(query(
-    //     collection(db, 'posts'), where('id', '==', parentTale)),
-    //     (snapshot) => setParentCard(snapshot.docs))
-    //     console.log(parentCard.map(obj=>(console.log(obj))))
-    // }, [db, parentTale])
+    useEffect(() => {
+        if (parentTale) getDoc(
+            doc(db, 'posts', parentTale)).then((obj) => {
+                setParentCard(obj)
+            })
+    }, [db])
 
     const likePost = async () => {
         if (hasLiked) {
             await deleteDoc(doc(db, 'posts', id, 'likes', session.user.uid))
+            await deleteDoc(doc(db, 'users', session.user.uid, 'likes', id))
         } else {
             await setDoc(doc(db, 'posts', id, 'likes', session.user.uid), {
                 username: session.user.username,
                 timestamp: serverTimestamp(),
+            })
+            await setDoc(doc(db, 'users', session.user.uid, 'likes', id), {
+                timestamp: serverTimestamp()
             })
         }
 
@@ -70,11 +76,17 @@ function Post({ id, username, parentTale, userImage, title, tale, tailStory }) {
             userImage: session.user.image,
             timestamp: serverTimestamp(),
         })
+        await setDoc(doc(db, 'users', session.user.uid, 'comments', newDoc.id), {
+            post: id,
+            comment: commentToSend,
+            timestamp: serverTimestamp(),
+        })
     }
 
     function postRedirect() {
-        alert('In Development')
+        setOpenTailPost(true)
     }
+
     return (
         <div className='bg-white my-7 border rounded-sm'>
             {/* Header */}
@@ -86,15 +98,14 @@ function Post({ id, username, parentTale, userImage, title, tale, tailStory }) {
             </div>
 
             {/* Tale */}
-            {parentTale ?
-                <div className='block p-5 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 shadow-gray-400' onClick={postRedirect}>
-                    {parentTale}
-                    <div className='flex'><img src={userImage} alt="dp" className='rounded-full h-8 w-8 commentect-contain' /><p className='flex-1 font-bold pl-3'>{username}</p></div>
+            {parentCard ?
+                <div className='block p-4 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 shadow-gray-400' onClick={postRedirect}>
+                    <div className='flex'><img src={parentCard.data().profileImg} alt="dp" className='rounded-full h-7 w-7 commentect-contain' /><p className='flex-1 font-bold pl-3'>{parentCard.data().username}</p></div>
                     <br />
-                    <h1 className='font-bold text-md'>{title}</h1>
-                    <p className='truncate'>{parentCard.map(obj => {
-                        console.log(obj);
-                    })}</p>
+                    <div className='top-0'>
+                        <h1 className='font-bold text-md'>{parentCard.data().title}</h1>
+                        <p className='truncate'>{parentCard.data().story}</p>
+                    </div>
                 </div>
 
                 : <div className='w-full mt-2 '>
@@ -102,7 +113,7 @@ function Post({ id, username, parentTale, userImage, title, tale, tailStory }) {
                         <h1 className='font-bold text-xl'>{title}</h1>
                     </div>
                 </div>}
-            <div className='p-5 shadow-sm'>
+            <div className='p-5 shadow-sm break-all break-normal'>
                 <p>{tale}</p>
             </div>
             {/* Buttons */}
