@@ -84,7 +84,7 @@ function Modal() {
                         leaveTo='opacity-0'
                     >
                         <Dialog.Overlay
-                            className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+                            className="fixed inset-0 bg-gray-400 bg-opacity-75 transition-opacity" />
                     </Transition.Child>
                     <span
                         className='hidden sm:inline-block sm:align-middle sm:h-screen'

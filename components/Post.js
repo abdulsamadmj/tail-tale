@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import {
-    HeartIcon,
+    SparklesIcon,
     PaperAirplaneIcon,
     DotsHorizontalIcon,
     ChatIcon,
@@ -8,7 +8,7 @@ import {
     ReplyIcon,
     EmojiHappyIcon,
 } from '@heroicons/react/outline'
-import { HeartIcon as HeartIconFilled } from '@heroicons/react/solid'
+import { SparklesIcon as SparklesIconFilled } from '@heroicons/react/solid'
 import { useSession } from 'next-auth/react'
 import { addDoc, collection, deleteDoc, doc, getDoc, onSnapshot, orderBy, query, serverTimestamp, setDoc, where } from 'firebase/firestore'
 import { db } from '../firebase'
@@ -122,9 +122,9 @@ function Post({ id, username, parentTale, userImage, title, tale, tailStory }) {
                     <div className='flex justify-between px-4 pt-2 pb-1'>
                         <div className='flex space-x-3'>
                             {hasLiked ? (
-                                <HeartIconFilled onClick={likePost} className='postBtn text-red-600' />
+                                <SparklesIconFilled onClick={likePost} className='postBtn text-yellow-400' />
                             ) : (
-                                <HeartIcon onClick={likePost} className='postBtn' />
+                                <SparklesIcon onClick={likePost} className='postBtn' />
                             )}
 
                             <ChatIcon className='postBtn' onClick={() => {

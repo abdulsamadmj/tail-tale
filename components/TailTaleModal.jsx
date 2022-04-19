@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { useRecoilState } from 'recoil'
-import { tailTaleModalState,postModalState } from '../atoms/modalAtom'
+import { tailTaleModalState, postModalState } from '../atoms/modalAtom'
 import { Dialog, Transition } from '@headlessui/react'
 import { DocumentAddIcon, DocumentIcon } from '@heroicons/react/outline'
 import { db, storage } from '../firebase'
@@ -19,18 +19,18 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
     const { data: session } = useSession()
     const [post, setPost] = useState([])
     useEffect(() => {
-        onSnapshot(query(collection(db, 'posts'), where('id','==',id)), (snapshot) => {
+        onSnapshot(query(collection(db, 'posts'), where('id', '==', id)), (snapshot) => {
             setPost(snapshot.docs)
         })
     }
-    , [db]);
+        , [db]);
 
-        
+
     const uploadPost = async () => {
         if (loading) return;
         setLoading(true);
-        var story=storyRef.current.value
-        var tailChecked= tailStoryRef.current.checked
+        var story = storyRef.current.value
+        var tailChecked = tailStoryRef.current.checked
         // 1) Create a post and add to firestore 'posts' collection
         // 2) get the post ID from it
 
@@ -43,7 +43,7 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
             timestamp: serverTimestamp()
         })
 
-        await setDoc(doc(db, 'users',session.user.uid,'posts',docRef.id), {
+        await setDoc(doc(db, 'users', session.user.uid, 'posts', docRef.id), {
             parentTale: id,
             story: story,
             tailStory: tailChecked,
@@ -68,7 +68,7 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
         setSelectedFile(false)
     }
 
-    function postRedirect(){
+    function postRedirect() {
         setOpenTail(false)
         setOpenPost(true)
     }
@@ -98,7 +98,7 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
                         leaveTo='opacity-0'
                     >
                         <Dialog.Overlay
-                            className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+                            className="fixed inset-0 bg-gray-400 bg-opacity-75 transition-opacity" />
                     </Transition.Child>
                     {/* used to scenter the modal components */}
                     <span
@@ -128,8 +128,8 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
                                         {/* parent tale card */}
                                         <div className='block p-5 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 shadow-gray-400' onClick={postRedirect}>
 
-                                            <div className='flex shadow-sm pb-1'><img src={userImage} alt="dp" className='rounded-full h-8 w-8 commentect-contain'/><p className='flex-1 font-bold'>{username}</p></div>
-                                            <br/>
+                                            <div className='flex shadow-sm pb-1'><img src={userImage} alt="dp" className='rounded-full h-8 w-8 commentect-contain' /><p className='flex-1 font-bold'>{username}</p></div>
+                                            <br />
                                             <h1 className='font-bold text-md'>{title}</h1>
                                             <p className='truncate'>{tale}</p>
                                         </div>

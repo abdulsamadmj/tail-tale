@@ -14,3 +14,8 @@ export const tailTaleModalState=(id)=> atom({
     key: 'tailPost'+id,
     default: false,
 })
+
+export const sessionState=(session)=> atom({
+    key: 'session',
+    default: session,
+})
