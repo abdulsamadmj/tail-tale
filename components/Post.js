@@ -8,7 +8,10 @@ import {
     ReplyIcon,
     EmojiHappyIcon,
 } from '@heroicons/react/outline'
-import { SparklesIcon as SparklesIconFilled } from '@heroicons/react/solid'
+import {
+    SparklesIcon as SparklesIconFilled,
+    BookmarkIcon as BookmarkIconFilled
+} from '@heroicons/react/solid'
 import { useSession } from 'next-auth/react'
 import { addDoc, collection, deleteDoc, doc, getDoc, onSnapshot, orderBy, query, serverTimestamp, setDoc, where } from 'firebase/firestore'
 import { db } from '../firebase'
@@ -27,6 +30,7 @@ function Post({ id, username, parentTale, userImage, title, tale, tailStory }) {
     const [openTailPost, setOpenTailPost] = useRecoilState(postModalState(parentTale))
     const [openTail, setOpenTail] = useRecoilState(tailTaleModalState(id))
     const [parentCard, setParentCard] = useState(null)
+    const [hasSaved, setHasSaved] = useState(false)
 
     useEffect(() => onSnapshot(query(
         collection(db, 'posts', id, 'comments'),
@@ -64,6 +68,18 @@ function Post({ id, username, parentTale, userImage, title, tale, tailStory }) {
             })
         }
 
+    }
+
+    const savePost = async () => {
+        
+        if (hasSaved) {
+            await deleteDoc(doc(db, 'users', session.user.uid, 'savedPosts', id))
+        } else {
+            await setDoc(doc(db, 'users', session.user.uid, 'savedPosts', id), {
+                timestamp: serverTimestamp()
+            })
+        }
+        setHasSaved(!hasSaved)
     }
 
     const sendComment = async (e) => {
@@ -139,7 +155,7 @@ function Post({ id, username, parentTale, userImage, title, tale, tailStory }) {
                         </div>
                         <div className='flex space-x-3'>
                             <PaperAirplaneIcon className='postBtn rotate-45' />
-                            <BookmarkIcon className='postBtn' />
+                            {hasSaved ? <BookmarkIconFilled className='postBtn' onClick={savePost} /> : <BookmarkIcon className='postBtn' onClick={savePost} />}
                         </div>
                     </div>
                     {

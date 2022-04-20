@@ -13,7 +13,6 @@ function savedPosts() {
     }, [router])
   return (
     <div>
-        <Header/>
         savedPosts
     </div>
   )

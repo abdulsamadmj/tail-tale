@@ -13,4 +13,8 @@
         @apply h-7 hover:scale-125 cursor-pointer
         transition-all duration-150 ease-out;
     }
+
+    body{
+        @apply scrollbar-hide bg-gray-50;
+    }
 }

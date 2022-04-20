@@ -8,7 +8,10 @@ import { db } from '../firebase'
 import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, serverTimestamp, setDoc, where } from 'firebase/firestore'
 
 function Feed() {
+    //getting session obj
     const { data: session } = useSession();
+    
+    //adding user to db
     if(session){
         addUser()
     }
@@ -29,7 +32,7 @@ function Feed() {
             </section>
             {session && (
                 <section className='hidden xl:inline-grid md:col-span-1'>
-                    <div className='fixed top-20'>
+                    <div className='fixed'>
                         <MiniProfile />
                         <Suggestions />
                     </div>

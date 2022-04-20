@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import React, { useState } from 'react'
+import React, { Fragment, useState } from 'react'
 import {
   SearchIcon,
   PlusCircleIcon,
@@ -81,7 +81,7 @@ function Header() {
               <BellIcon className='navBtn' />
 
 
-              <div class="relative inline-block text-left">
+              <div className="relative inline-block text-left">
                 <div>
 
                   <img src={session.user.image}
