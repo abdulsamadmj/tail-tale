@@ -1,10 +1,10 @@
-import React, { Fragment, useRef, useState } from 'react'
+import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { useRecoilState } from 'recoil'
 import { modalState } from '../atoms/modalAtom'
 import { Dialog, Transition } from '@headlessui/react'
 import { DocumentAddIcon, DocumentIcon } from '@heroicons/react/outline'
 import { db, storage } from '../firebase'
-import { addDoc, collection, doc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
+import { addDoc, collection, doc, onSnapshot, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
 import { useSession } from 'next-auth/react'
 import { getDownloadURL, uploadString } from 'firebase/storage'
 
@@ -17,6 +17,8 @@ function Modal() {
     const [loading, setLoading] = useState(false)
     const [selectedFile, setSelectedFile] = useState(null)
     const { data: session } = useSession()
+    const [followers, setFollowers] = useState([])
+
 
     const uploadPost = async () => {
         if (loading) return;
@@ -25,7 +27,11 @@ function Modal() {
         // 1) Create a post and add to firestore 'posts' collection
         // 2) get the post ID from it
 
+        await onSnapshot(collection(db, 'users', session?.user?.uid, 'followers'),
+            (snapshot) => setFollowers(snapshot.docs)
+        )
         const docRef = await addDoc(collection(db, 'posts'), {
+            uid:session.user.uid,
             username: session.user.username,
             title: titleRef.current.value,
             story: storyRef.current.value,
@@ -34,12 +40,24 @@ function Modal() {
             timestamp: serverTimestamp()
         })
 
-        await setDoc(doc(db, 'users',session.user.uid,'posts',docRef.id), {
+        await setDoc(doc(db, 'users', session.user.uid, 'posts', docRef.id), {
             title: titleRef.current.value,
             story: storyRef.current.value,
             tailStory: tailStoryRef.current.checked,
             timestamp: serverTimestamp()
         })
+
+        await followers.map(async (obj) => (
+            await setDoc(doc(db, 'users', obj.id, 'homeFeed', docRef.id), {
+                uid:session.user.uid,
+                username: session.user.username,
+                title: titleRef.current.value,
+                story: storyRef.current.value,
+                profileImg: session.user.image,
+                tailStory: tailStoryRef.current.checked,
+                timestamp: serverTimestamp()
+            })
+        ))
 
         console.log("New Doc", docRef.id)
 
@@ -117,14 +135,14 @@ function Modal() {
                                         </div>
                                         <div className="mt-2">
                                             <textarea
-                                            onChange={(e)=>{
-                                                var temp=''
-                                                if(e.key==13){
-                                                    temp=temp+e.target.value+'\n'
-                                                }
-                                                temp=temp+e.target.value
-                                                setSelectedFile(temp)
-                                            }}
+                                                onChange={(e) => {
+                                                    var temp = ''
+                                                    if (e.key == 13) {
+                                                        temp = temp + e.target.value + '\n'
+                                                    }
+                                                    temp = temp + e.target.value
+                                                    setSelectedFile(temp)
+                                                }}
                                                 ref={storyRef}
                                                 className='border-none shadow-gray-400 shadow-inner focus:ring-0 w-full text-justify rounded-md'
                                                 rows="12"

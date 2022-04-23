@@ -10,7 +10,8 @@ import {
 } from '@heroicons/react/outline'
 import {
     SparklesIcon as SparklesIconFilled,
-    BookmarkIcon as BookmarkIconFilled
+    BookmarkIcon as BookmarkIconFilled,
+    ExclamationCircleIcon as ExclamationCircleIconFilled
 } from '@heroicons/react/solid'
 import { useSession } from 'next-auth/react'
 import { addDoc, collection, deleteDoc, doc, getDoc, onSnapshot, orderBy, query, serverTimestamp, setDoc, where } from 'firebase/firestore'
@@ -18,9 +19,10 @@ import { db } from '../firebase'
 import Moment from 'react-moment'
 import { postModalState, tailTaleModalState } from '../atoms/modalAtom'
 import { atom, useRecoilState } from 'recoil'
+import { Transition } from '@headlessui/react'
 
 
-function Post({ id, username, parentTale, userImage, title, tale, tailStory }) {
+function Post({ id, uid, username, parentTale, userImage, title, tale, tailStory }) {
     const { data: session } = useSession()
     const [comment, setComment] = useState("")
     const [comments, setComments] = useState([])
@@ -31,6 +33,9 @@ function Post({ id, username, parentTale, userImage, title, tale, tailStory }) {
     const [openTail, setOpenTail] = useRecoilState(tailTaleModalState(id))
     const [parentCard, setParentCard] = useState(null)
     const [hasSaved, setHasSaved] = useState(false)
+    const [postMenu, setPostMenu] = useState(false)
+    const [hasReported, setHasReported] = useState(false)
+    const [follow, setFollow] = useState(false)
 
     useEffect(() => onSnapshot(query(
         collection(db, 'posts', id, 'comments'),
@@ -54,13 +59,16 @@ function Post({ id, username, parentTale, userImage, title, tale, tailStory }) {
             })
     }, [db])
 
+
     const likePost = async () => {
         if (hasLiked) {
             await deleteDoc(doc(db, 'posts', id, 'likes', session.user.uid))
             await deleteDoc(doc(db, 'users', session.user.uid, 'likes', id))
         } else {
             await setDoc(doc(db, 'posts', id, 'likes', session.user.uid), {
+                uid: session.user.uid,
                 username: session.user.username,
+                userImage: session.user.image,
                 timestamp: serverTimestamp(),
             })
             await setDoc(doc(db, 'users', session.user.uid, 'likes', id), {
@@ -71,7 +79,7 @@ function Post({ id, username, parentTale, userImage, title, tale, tailStory }) {
     }
 
     const savePost = async () => {
-        
+
         if (hasSaved) {
             await deleteDoc(doc(db, 'users', session.user.uid, 'savedPosts', id))
         } else {
@@ -87,6 +95,7 @@ function Post({ id, username, parentTale, userImage, title, tale, tailStory }) {
         const commentToSend = comment;
         setComment('');
         const newDoc = await addDoc(collection(db, 'posts', id, 'comments'), {
+            uid: session.user.uid,
             comment: commentToSend,
             username: session.user.username,
             userImage: session.user.image,
@@ -103,6 +112,39 @@ function Post({ id, username, parentTale, userImage, title, tale, tailStory }) {
         setOpenTailPost(true)
     }
 
+    async function reportPost() {
+        if (hasReported) {
+            alert('Already reported')
+        } else {
+            var reason = prompt("Reason for Reprting")
+            await setDoc(doc(db, 'admin', 'postReports', id, session.user.uid), {
+                uid: session.user.uid,
+                reason: reason,
+                username: session.user.username,
+                timestamp: serverTimestamp(),
+            })
+        }
+        setHasReported(true)
+    }
+
+    const followUser = async () => {
+
+        if (follow) {
+            await deleteDoc(doc(db, 'users', id, 'followers', session.user.uid))
+            await deleteDoc(doc(db, 'users', session.user.uid, 'following', id))
+            setFollow(false)
+        } else {
+            await setDoc(doc(db, 'users', id, 'followers', session.user.uid), {
+                username: session.user.username,
+                timestamp: serverTimestamp(),
+            })
+            await setDoc(doc(db, 'users', session.user.uid, 'following', id), {
+                timestamp: serverTimestamp()
+            })
+            setFollow(true)
+        }
+    }
+
     return (
         <div className='bg-white my-7 border rounded-sm'>
             {/* Header */}
@@ -110,7 +152,38 @@ function Post({ id, username, parentTale, userImage, title, tale, tailStory }) {
                 <img src={userImage} className="rounded-full h-12 2-12 commentect-contain border p-1 
             mr-3" alt="dp" />
                 <p className='flex-1 font-bold'>{username}</p>
-                <DotsHorizontalIcon className='h-5 cursor-pointer' />
+                <DotsHorizontalIcon className='h-5 cursor-pointer' onClick={() => {
+                    setPostMenu(true)
+                }} />
+                <Transition
+                    show={postMenu}
+                    enter="transition ease-out duration-100"
+                    enterFrom="transform opacity-0 scale-95"
+                    enterTo="transform opacity-100 scale-100"
+                    leave="transition ease-in duration-75"
+                    leaveFrom="transform opacity-100 scale-100"
+                    leaveTo="transform opacity-0 scale-95">
+
+                    <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabIndex="-1">
+                        <div className="py-1" role="none">
+
+                            <h1 className="text-gray-700 block px-4 py-2 text-sm hover:cursor-pointer hover:bg-gray-50" role="menuitem" tabIndex="-1" id="menu-item-0"
+                                onClick={() => {
+                                    reportPost()
+                                    setPostMenu(false)
+                                }}>
+                                Report Post
+                            </h1>
+                            <h1 className="text-gray-700 block px-4 py-2 text-sm hover:cursor-pointer hover:bg-gray-50 shadow-sm" role="menuitem" tabIndex="-1" id="menu-item-1"
+                                onClick={() => {
+                                    followUser()
+                                    setPostMenu(false)
+                                }}>
+                                {follow ? 'Unfollow' : 'Follow'}
+                            </h1>
+                        </div>
+                    </div>
+                </Transition>
             </div>
 
             {/* Tale */}

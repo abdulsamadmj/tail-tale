@@ -92,30 +92,38 @@ function Header() {
 
                 </div>
                 <Transition
-                show={accMenu}
-                enter= "transition ease-out duration-100"
-                enterFrom= "transform opacity-0 scale-95"
-                enterTo= "transform opacity-100 scale-100"
-                leave= "transition ease-in duration-75"
-                leaveFrom= "transform opacity-100 scale-100"
-                leaveTo= "transform opacity-0 scale-95">
+                  show={accMenu}
+                  enter="transition ease-out duration-100"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95">
 
-                <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabIndex="-1">
-                  <div className="py-1" role="none">
+                  <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabIndex="-1">
+                    <div className="py-1" role="none">
 
-                    <h1 className="text-gray-700 block px-4 py-2 text-sm hover:cursor-pointer hover:bg-gray-50" role="menuitem" tabIndex="-1" id="menu-item-0" onClick={() => { router.push('/userPage') }}>
-                      <UserCircleIcon className='w-6 navBtn pr-1' />Profile
-                    </h1>
-                    <h1 className="text-gray-700 block px-4 py-2 text-sm hover:cursor-pointer hover:bg-gray-50 shadow-sm" role="menuitem" tabIndex="-1" id="menu-item-1" onClick={() => { router.push('/userPage/savedPosts') }}>
-                      <BookmarkIcon className='w-6 navBtn pr-1' />Saved Posts
-                    </h1>
+                      <h1 className="text-gray-700 block px-4 py-2 text-sm hover:cursor-pointer hover:bg-gray-50" role="menuitem" tabIndex="-1" id="menu-item-0"
+                        onClick={() => {
+                          router.push('/userPage')
+                          setAccMenu(false)
+                        }}>
+                        <UserCircleIcon className='w-6 navBtn pr-1' />Profile
+                      </h1>
+                      <h1 className="text-gray-700 block px-4 py-2 text-sm hover:cursor-pointer hover:bg-gray-50 shadow-sm" role="menuitem" tabIndex="-1" id="menu-item-1"
+                        onClick={() => {
+                          router.push('/userPage/savedPosts')
+                          setAccMenu(false)
+                        }}>
+                        <BookmarkIcon className='w-6 navBtn pr-1' />Saved Posts
+                      </h1>
 
-                    <button type="submit" className="text-gray-700 block w-full text-left px-4 py-2 text-sm hover:cursor-pointer hover:bg-gray-50 " role="menuitem" tabIndex="-1" id="menu-item-3"
-                      onClick={signOut}>
-                      <LogoutIcon className='w-6 navBtn pr-1' />Sign out
-                    </button>
+                      <button type="submit" className="text-gray-700 block w-full text-left px-4 py-2 text-sm hover:cursor-pointer hover:bg-gray-50 " role="menuitem" tabIndex="-1" id="menu-item-3"
+                        onClick={signOut}>
+                        <LogoutIcon className='w-6 navBtn pr-1' />Sign out
+                      </button>
+                    </div>
                   </div>
-                </div>
                 </Transition>
               </div>
 

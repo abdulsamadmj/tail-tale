@@ -7,7 +7,6 @@ import Image from 'next/image';
 function signin({ providers }) {
   return (
     <>
-      <Header />
       <div className="flex flex-col items-center justify-center
       min-h-screen py-2 -mt-10 px-14 text-center">
         <div>

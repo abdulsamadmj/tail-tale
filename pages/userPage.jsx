@@ -92,11 +92,11 @@ function userPage() {
                   <BookmarkIconFilled className='w-6 navBtn pr-1' />Saved Posts
                 </h1>
 
-                <h1 className="text-gray-700 block px-4 py-2 text-sm hover:cursor-pointer hover:bg-gray-50 shadow-sm" role="menuitem" tabIndex="-1" id="menu-item-1" onClick={() => { router.push('/userPage/savedPosts') }}>
+                <h1 className="text-gray-700 block px-4 py-2 text-sm hover:cursor-pointer hover:bg-gray-50 shadow-sm" role="menuitem" tabIndex="-1" id="menu-item-1" onClick={() => { router.push('/userPage/Activities') }}>
                   <AnnotationIcon className='w-6 navBtn pr-1' />Activities
                 </h1>
 
-                <h1 className="text-gray-700 block px-4 py-2 text-sm hover:cursor-pointer hover:bg-gray-50 shadow-sm" role="menuitem" tabIndex="-1" id="menu-item-1" onClick={() => { router.push('/userPage/savedPosts') }}>
+                <h1 className="text-gray-700 block px-4 py-2 text-sm hover:cursor-pointer hover:bg-gray-50 shadow-sm" role="menuitem" tabIndex="-1" id="menu-item-1" onClick={() => { router.push('/userPage/deleteAcc') }}>
                   <MinusCircleIconFilled className='w-6 navBtn pr-1 text-red-500' />Delete Account
                 </h1>
 

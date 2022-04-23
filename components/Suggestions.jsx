@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { db } from '../firebase';
-import { collection, deleteDoc, doc, onSnapshot, onSnapshotsInSync, orderBy, query, serverTimestamp, setDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, limit, onSnapshot, onSnapshotsInSync, orderBy, query, serverTimestamp, setDoc } from 'firebase/firestore';
 import { useSession } from 'next-auth/react';
 import Follow from './Follow'
 
@@ -9,7 +9,7 @@ function Suggestions() {
   const [temp, setTemp] = useState([])
 
   useEffect(() => {
-    onSnapshot(query(collection(db, 'users'), orderBy('lastLogin', 'desc')), snapshot => {
+    onSnapshot(query(collection(db, 'users'), orderBy('lastLogin', 'desc'),limit(8)), snapshot => {
       setTemp(snapshot.docs)
     })
   }, [db])

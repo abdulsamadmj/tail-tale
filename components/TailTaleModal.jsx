@@ -18,13 +18,14 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
     const [selectedFile, setSelectedFile] = useState(null)
     const { data: session } = useSession()
     const [post, setPost] = useState([])
+    const [followers, setFollowers] = useState([])
+    
     useEffect(() => {
         onSnapshot(query(collection(db, 'posts'), where('id', '==', id)), (snapshot) => {
             setPost(snapshot.docs)
         })
     }
         , [db]);
-
 
     const uploadPost = async () => {
         if (loading) return;
@@ -34,7 +35,12 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
         // 1) Create a post and add to firestore 'posts' collection
         // 2) get the post ID from it
 
+        await onSnapshot(collection(db, 'users', session?.user?.uid, 'followers'),
+            (snapshot) => setFollowers(snapshot.docs)
+        )
+
         const docRef = await addDoc(collection(db, 'posts'), {
+            uid:session.user.uid,
             username: session.user.username,
             parentTale: id,
             story: storyRef.current.value,
@@ -44,11 +50,25 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
         })
 
         await setDoc(doc(db, 'users', session.user.uid, 'posts', docRef.id), {
+            uid:session.user.uid,
+            username: session.user.username,
             parentTale: id,
             story: story,
             tailStory: tailChecked,
             timestamp: serverTimestamp()
         })
+
+        await followers.map(async (obj) => (
+            await setDoc(doc(db, 'users', obj.id, 'homeFeed', docRef.id), {
+                uid:session.user.uid,
+                username: session.user.username,
+                title: titleRef.current.value,
+                story: storyRef.current.value,
+                profileImg: session.user.image,
+                tailStory: tailStoryRef.current.checked,
+                timestamp: serverTimestamp()
+            })
+        ))
 
         console.log("New Doc", docRef.id)
 
