@@ -20,9 +20,11 @@ import Moment from 'react-moment'
 import { postModalState, tailTaleModalState } from '../atoms/modalAtom'
 import { atom, useRecoilState } from 'recoil'
 import { Transition } from '@headlessui/react'
+import { async } from '@firebase/util'
+import { useRouter } from 'next/router'
 
 
-function Post({ id, uid, username, parentTale, userImage, title, tale, tailStory }) {
+function Post({ id, uid, username, parentTale, userImage, title, tale, tailStory, timestamp }) {
     const { data: session } = useSession()
     const [comment, setComment] = useState("")
     const [comments, setComments] = useState([])
@@ -35,7 +37,24 @@ function Post({ id, uid, username, parentTale, userImage, title, tale, tailStory
     const [hasSaved, setHasSaved] = useState(false)
     const [postMenu, setPostMenu] = useState(false)
     const [hasReported, setHasReported] = useState(false)
+    const [following, setFollowing] = useState([])
     const [follow, setFollow] = useState(false)
+    const [followers, setFollowers] = useState([])
+
+    const router = useRouter();
+
+    useEffect(() => {
+        if (session) {
+            onSnapshot(collection(db, 'users', session.user.uid, 'following'),
+                (snapshot) => setFollowing(snapshot.docs)
+            )
+        }
+    }, [db, uid])
+
+    useEffect(() =>
+        setFollow(following.findIndex((flw) => flw.id === uid) !== -1)
+        , [following]
+    )
 
     useEffect(() => onSnapshot(query(
         collection(db, 'posts', id, 'comments'),
@@ -109,6 +128,7 @@ function Post({ id, uid, username, parentTale, userImage, title, tale, tailStory
     }
 
     function postRedirect() {
+        setOpenPost(false)
         setOpenTailPost(true)
     }
 
@@ -117,7 +137,7 @@ function Post({ id, uid, username, parentTale, userImage, title, tale, tailStory
             alert('Already reported')
         } else {
             var reason = prompt("Reason for Reprting")
-            await setDoc(doc(db, 'admin', 'postReports', id, session.user.uid), {
+            await setDoc(doc(db, 'adminPanel', 'postReports', id, session.user.uid), {
                 uid: session.user.uid,
                 reason: reason,
                 username: session.user.username,
@@ -130,31 +150,69 @@ function Post({ id, uid, username, parentTale, userImage, title, tale, tailStory
     const followUser = async () => {
 
         if (follow) {
-            await deleteDoc(doc(db, 'users', id, 'followers', session.user.uid))
-            await deleteDoc(doc(db, 'users', session.user.uid, 'following', id))
+            await deleteDoc(doc(db, 'users', uid, 'followers', session.user.uid))
+            await deleteDoc(doc(db, 'users', session.user.uid, 'following', uid))
             setFollow(false)
         } else {
-            await setDoc(doc(db, 'users', id, 'followers', session.user.uid), {
+            await setDoc(doc(db, 'users', uid, 'followers', session.user.uid), {
                 username: session.user.username,
                 timestamp: serverTimestamp(),
             })
-            await setDoc(doc(db, 'users', session.user.uid, 'following', id), {
+            await setDoc(doc(db, 'users', session.user.uid, 'following', uid), {
                 timestamp: serverTimestamp()
             })
             setFollow(true)
         }
     }
 
+    async function deletePost() {
+
+
+        await onSnapshot(collection(db, 'users', session?.user?.uid, 'followers'),
+            (snapshot) => setFollowers(snapshot.docs)
+        )
+
+        if (!title) {
+            title = ""
+        }
+        if (!parentTale) {
+            parentTale = ""
+        }
+        await setDoc(doc(db, 'users', session?.user?.uid, 'deletedPosts', id), {
+            uid: session.user.uid,
+            username: session.user.username,
+            title: title,
+            story: tale,
+            parentTale: parentTale,
+            profileImg: session.user.image,
+            tailStory: tailStory,
+            timestamp: timestamp,
+            deletedTimestamp: serverTimestamp()
+        })
+
+        await deleteDoc(doc(db, 'users', session.user.uid, 'posts', id))
+        await deleteDoc(doc(db, 'posts', id))
+
+        await followers.map(async (obj) => (
+            await deleteDoc(doc(db, 'users', obj.id, 'homeFeed', id))
+        ))
+    }
+
     return (
         <div className='bg-white my-7 border rounded-sm'>
             {/* Header */}
-            <div className="flex items-center p-5 shadow-sm">
-                <img src={userImage} className="rounded-full h-12 2-12 commentect-contain border p-1 
-            mr-3" alt="dp" />
-                <p className='flex-1 font-bold'>{username}</p>
-                <DotsHorizontalIcon className='h-5 cursor-pointer' onClick={() => {
-                    setPostMenu(true)
-                }} />
+            <div className="flex items-center p-5 shadow-sm relative">
+                <img src={userImage} className="rounded-full h-12 2-12 commentect-contain border 
+            mr-3 hover:cursor-pointer" alt="dp" onClick={() => {
+                        router.push({
+                            pathname: '/userPage',
+                            query: { uid: uid }
+                        })
+                    }} />
+                <p className='flex-1 font-bold'>{username}</p><div>
+                    {session && <DotsHorizontalIcon className='h-5 cursor-pointer' onClick={() => {
+                        setPostMenu(!postMenu)
+                    }} />}</div>
                 <Transition
                     show={postMenu}
                     enter="transition ease-out duration-100"
@@ -164,7 +222,7 @@ function Post({ id, uid, username, parentTale, userImage, title, tale, tailStory
                     leaveFrom="transform opacity-100 scale-100"
                     leaveTo="transform opacity-0 scale-95">
 
-                    <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabIndex="-1">
+                    <div className="origin-top-right absolute right-0 z-20 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabIndex="-1">
                         <div className="py-1" role="none">
 
                             <h1 className="text-gray-700 block px-4 py-2 text-sm hover:cursor-pointer hover:bg-gray-50" role="menuitem" tabIndex="-1" id="menu-item-0"
@@ -174,13 +232,25 @@ function Post({ id, uid, username, parentTale, userImage, title, tale, tailStory
                                 }}>
                                 Report Post
                             </h1>
-                            <h1 className="text-gray-700 block px-4 py-2 text-sm hover:cursor-pointer hover:bg-gray-50 shadow-sm" role="menuitem" tabIndex="-1" id="menu-item-1"
-                                onClick={() => {
-                                    followUser()
-                                    setPostMenu(false)
-                                }}>
-                                {follow ? 'Unfollow' : 'Follow'}
-                            </h1>
+
+                            {uid == session?.user?.uid ?
+                                (<h1 className="text-gray-700 block px-4 py-2 text-sm hover:cursor-pointer hover:bg-gray-50 " role="menuitem" tabIndex="-1" id="menu-item-1"
+                                    onClick={() => {
+                                        deletePost()
+                                        setPostMenu(false)
+                                    }}>
+                                    Delete Post
+                                </h1>) : (
+                                    <h1 className="text-gray-700 block px-4 py-2 text-sm hover:cursor-pointer hover:bg-gray-50 " role="menuitem" tabIndex="-1" id="menu-item-1"
+                                        onClick={() => {
+                                            followUser()
+                                            setPostMenu(false)
+                                        }}>
+                                        {follow ? 'Unfollow' : 'Follow'}
+                                    </h1>
+                                )
+                            }
+
                         </div>
                     </div>
                 </Transition>

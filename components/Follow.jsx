@@ -1,11 +1,12 @@
 import { collection, deleteDoc, doc, onSnapshot, serverTimestamp, setDoc } from 'firebase/firestore'
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react'
 import { db } from '../firebase'
 
 function Follow({ id, userImage, username, fullname }) {
     const { data: session } = useSession();
-
+    const router = useRouter()
     const [following, setFollowing] = useState([])
     const [follow, setFollow] = useState(false)
 
@@ -32,14 +33,33 @@ function Follow({ id, userImage, username, fullname }) {
             })
         }
     }
+    
     return (
         id != session.user.uid &&
         <div key={id} className="flex items-center justify-between mt-3">
             <img
-                className='w-10 h-10 rounded-full border p-[2px]'
+                className='w-10 h-10 rounded-full border hover:cursor-pointer'
                 src={userImage}
-                alt="dp" />
-            <div className='flex-1 ml-4'>
+                alt="dp" onClick={() => {
+
+                    router.push({
+                        pathname: '/userPage',
+                        query: {
+                             uid: id,
+                            }
+                    })
+    
+                }}/>
+            <div className='flex-1 ml-3 hover:cursor-pointer' onClick={() => {
+
+                router.push({
+                    pathname: '/userPage',
+                    query: {
+                         uid: id,
+                        }
+                })
+
+            }}>
                 <h2 className='font-semibold text-sm'>{username}</h2>
                 <h3 className='text-xs truncate text-gray-400'>{fullname}</h3>
             </div>

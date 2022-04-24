@@ -105,7 +105,8 @@ function Header() {
 
                       <h1 className="text-gray-700 block px-4 py-2 text-sm hover:cursor-pointer hover:bg-gray-50" role="menuitem" tabIndex="-1" id="menu-item-0"
                         onClick={() => {
-                          router.push('/userPage')
+                          router.push({path:'/userPage',
+                        query:{uid: session?.user?.uid}})
                           setAccMenu(false)
                         }}>
                         <UserCircleIcon className='w-6 navBtn pr-1' />Profile
