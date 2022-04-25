@@ -28,11 +28,11 @@ function Profile({ uid, userImage, username, fullname }) {
     ), [db])
 
     useEffect(() =>
-        getDoc(doc(db, 'users', session?.user?.uid, 'following', uid)).then((obj)=>{
-            if(obj.exists()){
+        getDoc(doc(db, 'users', session?.user?.uid, 'following', uid)).then((obj) => {
+            if (obj.exists()) {
                 setFollow(true)
             }
-        }),[db]
+        }), [db]
     )
 
     const followUser = async () => {
@@ -63,7 +63,7 @@ function Profile({ uid, userImage, username, fullname }) {
                 <h2 className='font-bold'>{fullname}</h2>
                 <h3 className='text-base text-gray-400'>{username}
                 </h3>
-                <div className='text-base flex justify-between mt-3'>
+                <div className='text-base flex justify-between mt-3 text-center'>
 
                     <h1 className='font-bold mb-1 ml-4 pb-2'>{posts.length} Posts
                     </h1>
@@ -74,7 +74,9 @@ function Profile({ uid, userImage, username, fullname }) {
                     <h1 className='font-bold mb-1 ml-4 pb-2'>{following.length} Following</h1>
 
                 </div>
-                <div><button className={`${follow ? 'text-gray-600 font-semibold' : 'text-blue-600'} text-base`} onClick={followUser}>{follow ? 'Following' : 'Follow'}</button></div>
+                {uid != session?.user?.uid &&
+                    <div><button className={`${follow ? 'text-gray-600 font-semibold' : 'text-blue-600'} text-base`} onClick={followUser}>{follow ? 'Following' : 'Follow'}</button></div>
+                }
             </div>
 
 

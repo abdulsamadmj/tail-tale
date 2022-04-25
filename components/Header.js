@@ -64,21 +64,21 @@ function Header() {
         <div className='flex items-center justify-end space-x-4'>
           {router.pathname == '/' ? <NewspaperIconFilled className='navBtn' onClick={() => router.push('/')} /> : <NewspaperIcon className='navBtn' onClick={() => router.push('/')} />}
 
-          <MenuIcon className='h-6 md:hidden cursor-pointer' />
+          {/* <MenuIcon className='h-6 md:hidden cursor-pointer' /> */}
 
           {session ? (
             <>
               {router.pathname == '/home' ? <HomeIconFilled className='navBtn' onClick={() => router.push('/home?id=' + session.user.uid)} /> : <HomeIcon className='navBtn' onClick={() => router.push('/home?id=' + session.user.uid)} />}
 
-              <div className='relative navBtn'>
+              {/* <div className='relative navBtn'>
                 <PaperAirplaneIcon className='navBtn rotate-45' />
                 <div className="absolute -top-1 -right-2 text-xs w-5 h-5 
             bg-red-500 rounded-full flex items-center justify-center animate-pulse text-white">3</div>
-              </div>
+              </div> */}
               <PlusCircleIcon onClick={() => { setOpen(true) }}
                 className='navBtn' />
 
-              <BellIcon className='navBtn' />
+              {/* <BellIcon className='navBtn' /> */}
 
 
               <div className="relative inline-block text-left">
@@ -105,7 +105,7 @@ function Header() {
 
                       <h1 className="text-gray-700 block px-4 py-2 text-sm hover:cursor-pointer hover:bg-gray-50" role="menuitem" tabIndex="-1" id="menu-item-0"
                         onClick={() => {
-                          router.push({path:'/userPage',
+                          router.push({pathname:'/userPage',
                         query:{uid: session?.user?.uid}})
                           setAccMenu(false)
                         }}>

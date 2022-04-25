@@ -140,7 +140,7 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
                         sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
                             <div>
                                 <div>
-                                    <div className="mt-3 text-center sm:mt-5">
+                                    <div className="text-center sm:mt-5">
                                         <Dialog.Title as='h3'
                                             className="text-lg leading-6 font-medium text-gray-900 pb-1">
                                             Add Tail-Tale
@@ -162,23 +162,23 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
                                                 }}
                                                 ref={storyRef}
                                                 className='border-none shadow-gray-400 shadow-inner focus:ring-0 w-full text-justify rounded-md'
-                                                rows="12"
+                                                rows="10"
                                                 placeholder='Type your story here...'
                                                 value={selectedFile ? (selectedFile) : ('')}></textarea>
                                         </div>
                                     </div>
-                                    <div className='flex items-center justify-center flex-col mt-4'>
+                                    <div className='flex items-center justify-center flex-col mt-2'>
                                         <h1>OR</h1>
                                         <div
                                             onClick={() => filePickerRef.current.click()}
                                             className="mx-autp flex items-center justify-center h-12 w-12 rounded-full
-                                        bg-red-100 cursor-pointer mt-4">
+                                        bg-red-100 cursor-pointer mt-2">
                                             <DocumentAddIcon
                                                 className='h-6 w-6 text-red-600'
                                                 aria-hidden="true" />
                                         </div>
                                         <Dialog.Title as='h3'
-                                            className="text-lg leading-6 font-medium text-gray-900 mt-3">
+                                            className="text-lg leading-6 font-medium text-gray-900 mt-2">
                                             Upload Text File
                                         </Dialog.Title>
                                         <div>
@@ -190,7 +190,7 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
                                                 onChange={addFileToPost} />
                                         </div>
                                     </div>
-                                    <div className="flex justify-center mt-6">
+                                    <div className="flex justify-center mt-4">
                                         <div className="form-check form-switch">
                                             <input className="form-check-input appearance-none w-9 -ml-10 rounded-full float-left h-5 align-top 
                                             bg-white bg-no-repeat bg-contain bg-gray-300 focus:outline-none cursor-pointer shadow-sm"
@@ -202,7 +202,7 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
                                     </div>
 
                                 </div>
-                                <div className='mt-5 sm:mt-6'>
+                                <div className='mt-3'>
                                     <button
                                         type='button'
                                         disabled={!storyRef || !selectedFile}

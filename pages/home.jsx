@@ -25,7 +25,7 @@ function Home() {
                 </section>
                 {session && (
                     <section className='hidden xl:inline-grid md:col-span-1'>
-                        <div className='fixed top-20'>
+                        <div className='fixed'>
                             <MiniProfile />
                             <Suggestions />
                         </div>

@@ -227,6 +227,17 @@ function Post({ id, uid, username, parentTale, userImage, title, tale, tailStory
 
                             <h1 className="text-gray-700 block px-4 py-2 text-sm hover:cursor-pointer hover:bg-gray-50" role="menuitem" tabIndex="-1" id="menu-item-0"
                                 onClick={() => {
+                                    setPostMenu(false)
+                                    router.push({
+                                        pathname: '/postPage',
+                                        query: { id: id }
+                                    })
+                                }}>
+                                Go To Post
+                            </h1>
+
+                            <h1 className="text-gray-700 block px-4 py-2 text-sm hover:cursor-pointer hover:bg-gray-50" role="menuitem" tabIndex="-1" id="menu-item-0"
+                                onClick={() => {
                                     reportPost()
                                     setPostMenu(false)
                                 }}>
@@ -297,7 +308,10 @@ function Post({ id, uid, username, parentTale, userImage, title, tale, tailStory
                             }} />}
                         </div>
                         <div className='flex space-x-3'>
-                            <PaperAirplaneIcon className='postBtn rotate-45' />
+                            <PaperAirplaneIcon className='postBtn rotate-45' onClick={() => {
+                                navigator.clipboard.writeText('https://tailtale.me/postPage?id=' + id)
+                                alert('Link Copied')
+                            }} />
                             {hasSaved ? <BookmarkIconFilled className='postBtn' onClick={savePost} /> : <BookmarkIcon className='postBtn' onClick={savePost} />}
                         </div>
                     </div>
