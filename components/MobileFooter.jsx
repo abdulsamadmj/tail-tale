@@ -15,7 +15,7 @@ function mobileFooter() {
     return (
         <footer className='absolute right-0 left-0 bottom-0 md:hidden'
             style={{
-                position: 'fixed'
+                position: 'fixed',
             }}
         >
             <div className='border-t bg-white z-50 h-[4rem] pt-2'>

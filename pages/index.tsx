@@ -8,7 +8,11 @@ import PostModal from '../components/PostModal'
 
 const Home: NextPage = () => {
   return (
-    <div className="bg-gray-50 h-screen overflow-y-scroll scrollbar-hide">
+    <div
+    style={{
+      marginBottom:'4rem'
+    }}
+    className="bg-gray-50 h-screen overflow-y-scroll scrollbar-hide">
       <Feed/>
       {/* <PostModal/> */}
     </div>
