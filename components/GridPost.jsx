@@ -54,7 +54,7 @@ function GridPost({ id, uid, username, parentTale, userImage, title, tale, tailS
                         { }
                     </p>
                 </header>) : (
-                    <div className='block p-5 max-w-sm bg-white rounded-lg  shadow-md shadow-gray-400'>
+                    <div className='block p-4 bg-white rounded-lg  shadow-md shadow-gray-400'>
 
                         <div className='flex shadow-sm pb-1'><img src={parentCard.data().profileImg} alt="dp" className='rounded-full w-5 commentect-contain' /><p className='flex-1 text-sm font-bold ml-1'>{parentCard.data().username}</p></div>
                         <br />

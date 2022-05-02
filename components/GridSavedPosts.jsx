@@ -7,6 +7,7 @@ import { db } from '../firebase'
 function GridSavedPosts({ id }) {
     const [likes, setLikes] = useState([])
     const [post, setPost] = useState(null)
+    const [parentCard, setParentCard] = useState(null)
     const router = useRouter();
     useEffect(() => onSnapshot(collection(db, 'posts', id, 'likes'),
         (snapshot) => setLikes(snapshot.docs)
@@ -16,8 +17,14 @@ function GridSavedPosts({ id }) {
         getDoc(
             doc(db, 'posts', id)).then((obj) => {
                 setPost(obj)
+                if(post && post.data().parentTale){
+                    getDoc(
+                        doc(db, 'posts', post.data().parentTale)).then((obj) => {
+                            setParentCard(obj)
+                        })
+                }
             })
-    }, [db])
+    }, [db,id,post])
 
     return (
         post &&
@@ -29,18 +36,26 @@ function GridSavedPosts({ id }) {
             <article className="overflow-hidden rounded-lg shadow-lg hover:bg-gray-100 bg-white">
 
 
-                <div className="block p-8 h-auto w-full truncate" >{post.data().story}</div>
+                <div className="block p-8 pb-4 h-auto w-full truncate" >{post.data().story}</div>
 
-                <header className="flex items-center justify-between leading-tight p-2 md:p-4">
-                    <h1 className="text-lg">
-                        <div className=" text-black truncate">
+                {!parentCard ? (<header className="flex items-center justify-between leading-tight p-2 md:p-4">
+                    <h1 className="text-md ml-2">
+                        <div className=" text-black truncate font-bold">
                             {post.data().title}
                         </div>
                     </h1>
-                    <p class="text-grey-darker text-sm">
+                    <p classname="text-grey-darker text-sm">
                         { }
                     </p>
-                </header>
+                </header>) : (
+                    <div className='block p-5 bg-white rounded-lg w-full shadow-md shadow-gray-400'>
+
+                        <div className='flex shadow-sm pb-1'><img src={parentCard.data().profileImg} alt="dp" className='rounded-full w-5 commentect-contain' /><p className='flex-1 text-sm font-bold ml-1'>{parentCard.data().username}</p></div>
+                        <br />
+                        <h1 className='font-bold text-sm'>{parentCard.data().title}</h1>
+                        <p className='truncate text-xs'>{parentCard.data().story}</p>
+                    </div>
+                )}
 
                 <footer className="flex items-center justify-between leading-none p-2 md:p-4">
                     <div className="flex items-center text-black hover:cursor-pointer" onClick={() => {
