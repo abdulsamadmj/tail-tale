@@ -21,11 +21,7 @@ function userPage() {
   const {
     query: { uid },
   } = router
-  useEffect(() => {
-    if (!session) {
-      router.push('/')
-    }
-  }, [router])
+
   useEffect(() => {
     if (uid)
       getDoc(
@@ -39,13 +35,16 @@ function userPage() {
     <main className={`grid md:grid-cols-2 md:max-w-3xl 
     xl:grid-cols-3 xl:max-w-6xl mx-auto !grid-cols-1 !max-w-3xl sm:grid-cols-1`}>
       <section className='col-span-2'>
-        {profile && <Profile uid={uid}
+        {profile && <><Profile uid={uid}
           userImage={profile.data().profileImg}
           username={profile.data().username}
           fullname={profile.data().fullname}
-        />}
-
-        <ProfilePosts />
+        />
+          <ProfilePosts
+            uid={uid}
+            userImage={profile.data().profileImg}
+            username={profile.data().username} />
+        </>}
 
       </section>
 

@@ -147,7 +147,9 @@ function Modal() {
                                                 className='border-none shadow-gray-400 shadow-inner focus:ring-0 w-full text-justify rounded-md'
                                                 rows="10"
                                                 placeholder='Type your story here...'
-                                                value={selectedFile ? (selectedFile) : ('')}></textarea>
+                                                value={selectedFile ? (selectedFile) : ('')}>
+
+                                            </textarea>
                                         </div>
                                     </div>
                                     <div className='flex items-center justify-center flex-col mt-2'>

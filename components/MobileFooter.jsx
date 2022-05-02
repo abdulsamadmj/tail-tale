@@ -14,15 +14,15 @@ function mobileFooter() {
     const router = useRouter();
     return (
         <footer className='absolute right-0 left-0 bottom-0 md:hidden'>
-            <div className='border-t bg-white z-50 h-[4rem] pt-2'>
-                <div className='max-w-sm'>
+            <div className='border-t bg-white z-50 h-[4rem] pt-3'>
+                <div className='min-w-full'>
 
-                    <div className='min-w-sm flex items-center justify-center space-x-10 '><h1 className=''></h1>
-                        {router.pathname == '/' ? <NewspaperIconFilled className='h-[3rem]' onClick={() => router.push('/')} /> : <NewspaperIcon className='h-[3rem]' onClick={() => router.push('/')} />}
+                    <div className='min-w-full flex items-center justify-center space-x-5'><h1 className=''></h1>
+                        {router.pathname == '/' ? <NewspaperIconFilled className='h-[2.5rem]' onClick={() => router.push('/')} /> : <NewspaperIcon className='h-[2.5rem]' onClick={() => router.push('/')} />}
 
                         {session && (
                             <>
-                                {router.pathname == '/home' ? <HomeIconFilled className='h-[3rem]' onClick={() => router.push('/home?id=' + session.user.uid)} /> : <HomeIcon className='h-[3rem]' onClick={() => router.push('/home?id=' + session.user.uid)} />}
+                                {router.pathname == '/home' ? <HomeIconFilled className='h-[2.5rem]' onClick={() => router.push('/home?id=' + session.user.uid)} /> : <HomeIcon className='h-[2.5rem]' onClick={() => router.push('/home?id=' + session.user.uid)} />}
 
                                 {/* <div className='relative navBtn'>
               <PaperAirplaneIcon className='navBtn rotate-45' />
@@ -30,7 +30,7 @@ function mobileFooter() {
           bg-red-500 rounded-full flex items-center justify-center animate-pulse text-white">3</div>
             </div> */}
                                 <PlusCircleIcon onClick={() => { setOpen(true) }}
-                                    className='h-[3rem]' />
+                                    className='h-[2.5rem]' />
 
                                 {/* <BellIcon className='navBtn' /> */}
 

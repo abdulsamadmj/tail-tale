@@ -3,12 +3,13 @@ import { AnnotationIcon, CogIcon, LogoutIcon } from '@heroicons/react/outline'
 import { CogIcon as CogIconFilled, BookmarkIcon as BookmarkIconFilled, MinusCircleIcon as MinusCircleIconFilled } from '@heroicons/react/solid'
 import { collection, deleteDoc, doc, getDoc, onSnapshot, serverTimestamp, setDoc } from 'firebase/firestore'
 import { signOut, useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { db } from '../firebase'
 
 function Profile({ uid, userImage, username, fullname }) {
     const { data: session } = useSession();
-
+    const router = useRouter()
     const [accSettings, setAccSettings] = useState(false)
     const [following, setFollowing] = useState([])
     const [follow, setFollow] = useState(false)
@@ -27,13 +28,14 @@ function Profile({ uid, userImage, username, fullname }) {
         (snapshot) => setPosts(snapshot.docs)
     ), [db])
 
-    useEffect(() =>
-        getDoc(doc(db, 'users', session?.user?.uid, 'following', uid)).then((obj) => {
-            if (obj.exists()) {
-                setFollow(true)
-            }
-        }), [db]
-    )
+    useEffect(() => {
+        if (session)
+            getDoc(doc(db, 'users', session?.user?.uid, 'following', uid)).then((obj) => {
+                if (obj.exists()) {
+                    setFollow(true)
+                }
+            }), [db]
+    })
 
     const followUser = async () => {
         if (follow) {

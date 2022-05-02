@@ -32,6 +32,7 @@ function postPage() {
                         userImage={post.data().profileImg}
                         username={post.data().username}
                     />
+                    //tailStories Grid
                 }
             </section>
         </main>

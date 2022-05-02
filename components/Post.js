@@ -40,6 +40,7 @@ function Post({ id, uid, username, parentTale, userImage, title, tale, tailStory
     const [following, setFollowing] = useState([])
     const [follow, setFollow] = useState(false)
     const [followers, setFollowers] = useState([])
+    const [tailStories, setTailStories] = useState([])
 
     const router = useRouter();
 
@@ -77,6 +78,13 @@ function Post({ id, uid, username, parentTale, userImage, title, tale, tailStory
                 setParentCard(obj)
             })
     }, [db])
+
+    useEffect(() => {
+        onSnapshot(collection(db, 'posts', id, 'tailStories'),
+            (snapshot) => setTailStories(snapshot.docs)
+        )
+    }, [db])
+
 
 
     const likePost = async () => {
@@ -269,7 +277,7 @@ function Post({ id, uid, username, parentTale, userImage, title, tale, tailStory
 
             {/* Tale */}
             {parentCard ?
-                <div className='block p-4 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 shadow-gray-400' onClick={postRedirect}>
+                <div className='block p-4 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 shadow-gray-300' onClick={postRedirect}>
                     <div className='flex'><img src={parentCard.data().profileImg} alt="dp" className='rounded-full h-7 w-7 commentect-contain' /><p className='flex-1 font-bold pl-3'>{parentCard.data().username}</p></div>
                     <br />
                     <div className='top-0'>
@@ -302,10 +310,22 @@ function Post({ id, uid, username, parentTale, userImage, title, tale, tailStory
                                 setOpenPost(true)
 
                             }} />
-                            {tailStory && <ReplyIcon className='postBtn rotate-180' onClick={() => {
+                            <div className='flex'>
+                                {tailStory && <><ReplyIcon className='postBtn rotate-180' onClick={() => {
 
-                                setOpenTail(true)
-                            }} />}
+                                    setOpenTail(true)
+                                }} />
+                                    {tailStories.length > 0 && <p className='text-[.8rem] font-bold ml-1 hover:cursor-pointer'
+                                        onClick={() => {
+                                            router.push({
+                                                pathname: '/postPage',
+                                                query: { id: id }
+                                            })
+                                        }}>{tailStories.length}</p>}
+
+                                </>
+                                }
+                            </div>
                         </div>
                         <div className='flex space-x-3'>
                             <PaperAirplaneIcon className='postBtn rotate-45' onClick={() => {

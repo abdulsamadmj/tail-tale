@@ -8,7 +8,7 @@ import { addDoc, collection, doc, onSnapshot, query, serverTimestamp, setDoc, up
 import { useSession } from 'next-auth/react'
 import { getDownloadURL, uploadString } from 'firebase/storage'
 
-function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
+function TailTaleModal({ id, uid, username, userImage, title, tale, tailStory }) {
     const [openTail, setOpenTail] = useRecoilState(tailTaleModalState(id))
     const [openPost, setOpenPost] = useRecoilState(postModalState(id))
     const filePickerRef = useRef(null)
@@ -19,7 +19,7 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
     const { data: session } = useSession()
     const [post, setPost] = useState([])
     const [followers, setFollowers] = useState([])
-    
+
     useEffect(() => {
         onSnapshot(query(collection(db, 'posts'), where('id', '==', id)), (snapshot) => {
             setPost(snapshot.docs)
@@ -40,7 +40,7 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
         )
 
         const docRef = await addDoc(collection(db, 'posts'), {
-            uid:session.user.uid,
+            uid: session.user.uid,
             username: session.user.username,
             parentTale: id,
             story: storyRef.current.value,
@@ -50,7 +50,16 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
         })
 
         await setDoc(doc(db, 'users', session.user.uid, 'posts', docRef.id), {
-            uid:session.user.uid,
+            uid: session.user.uid,
+            username: session.user.username,
+            parentTale: id,
+            story: story,
+            tailStory: tailChecked,
+            timestamp: serverTimestamp()
+        })
+
+        await setDoc(doc(db, 'posts', id, 'tailStories', docRef.id), {
+            uid: session.user.uid,
             username: session.user.username,
             parentTale: id,
             story: story,
@@ -60,9 +69,9 @@ function TailTaleModal({ id, username, userImage, title, tale, tailStory }) {
 
         await followers.map(async (obj) => (
             await setDoc(doc(db, 'users', obj.id, 'homeFeed', docRef.id), {
-                uid:session.user.uid,
+                uid: session.user.uid,
                 username: session.user.username,
-                title: titleRef.current.value,
+                parentTale: id,
                 story: storyRef.current.value,
                 profileImg: session.user.image,
                 tailStory: tailStoryRef.current.checked,
