@@ -23,7 +23,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
         <Header />
 
         <Component {...pageProps} />
-        <Modal />
+        <Modal/>
         <MobileFooter />
       </RecoilRoot>
     </SessionProvider>

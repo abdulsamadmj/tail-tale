@@ -13,7 +13,11 @@ function mobileFooter() {
     const [open, setOpen] = useRecoilState(modalState);
     const router = useRouter();
     return (
-        <footer className='absolute right-0 left-0 bottom-0 md:hidden'>
+        <footer className='absolute right-0 left-0 bottom-0 md:hidden'
+            style={{
+                position: 'fixed',
+            }}
+        >
             <div className='border-t bg-white z-50 h-[4rem] pt-2'>
                 <div className='max-w-sm'>
 
