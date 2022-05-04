@@ -31,7 +31,6 @@ function Post({ id, uid, username, parentTale, userImage, title, tale, tailStory
     const [likes, setLikes] = useState([])
     const [hasLiked, setHasLiked] = useState(false)
     const [openPost, setOpenPost] = useRecoilState(postModalState(id))
-    const [openTailPost, setOpenTailPost] = useRecoilState(postModalState(parentTale))
     const [openTail, setOpenTail] = useRecoilState(tailTaleModalState(id))
     const [parentCard, setParentCard] = useState(null)
     const [hasSaved, setHasSaved] = useState(false)
@@ -77,13 +76,13 @@ function Post({ id, uid, username, parentTale, userImage, title, tale, tailStory
             doc(db, 'posts', parentTale)).then((obj) => {
                 setParentCard(obj)
             })
-    }, [db])
+    }, [db, id])
 
     useEffect(() => {
         onSnapshot(collection(db, 'posts', id, 'tailStories'),
             (snapshot) => setTailStories(snapshot.docs)
         )
-    }, [db])
+    }, [db, id])
 
 
 
@@ -137,7 +136,10 @@ function Post({ id, uid, username, parentTale, userImage, title, tale, tailStory
 
     function postRedirect() {
         setOpenPost(false)
-        setOpenTailPost(true)
+        router.push({
+            pathname: '/postPage',
+            query: { id: parentTale }
+        })
     }
 
     async function reportPost() {
@@ -207,7 +209,7 @@ function Post({ id, uid, username, parentTale, userImage, title, tale, tailStory
     }
 
     return (
-        <div className='bg-white my-7 border rounded-sm'>
+        <div className='bg-white my-7 mb-2 border rounded-sm'>
             {/* Header */}
             <div className="flex items-center p-5 shadow-sm relative">
                 <img src={userImage} className="rounded-full h-12 2-12 commentect-contain border 
@@ -277,7 +279,7 @@ function Post({ id, uid, username, parentTale, userImage, title, tale, tailStory
 
             {/* Tale */}
             {parentCard ?
-                <div className='block p-4 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 shadow-gray-300' onClick={postRedirect}>
+                <div className='block p-4 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 shadow-gray-300 hover:cursor-pointer' onClick={postRedirect}>
                     <div className='flex'><img src={parentCard.data().profileImg} alt="dp" className='rounded-full h-7 w-7 commentect-contain' /><p className='flex-1 font-bold pl-3'>{parentCard.data().username}</p></div>
                     <br />
                     <div className='top-0'>

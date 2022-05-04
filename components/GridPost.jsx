@@ -22,13 +22,14 @@ function GridPost({ id, uid, username, parentTale, userImage, title, tale, tailS
     }, [db])
     useEffect(() => onSnapshot(query(
         collection(db, 'posts', id, 'tailStories')),
-        snapshot => setComments(snapshot.docs)
+        snapshot => setTailStories(snapshot.docs)
     ), [db, id])
 
     useEffect(() => onSnapshot(query(
         collection(db, 'posts', id, 'comments')),
-        snapshot => setTailStories(snapshot.docs)
+        snapshot => setComments(snapshot.docs)
     ), [db, id])
+    
     useEffect(() => onSnapshot(collection(db, 'posts', id, 'likes'),
         (snapshot) => setLikes(snapshot.docs)
     ), [db, id])

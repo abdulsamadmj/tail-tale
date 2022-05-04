@@ -76,7 +76,7 @@ function Profile({ uid, userImage, username, fullname }) {
                     <h1 className='font-bold mb-1 ml-4 pb-2'>{following.length} Following</h1>
 
                 </div>
-                {uid != session?.user?.uid &&
+                {session && uid != session?.user?.uid &&
                     <div><button className={`${follow ? 'text-gray-600 font-semibold' : 'text-blue-600'} text-base`} onClick={followUser}>{follow ? 'Following' : 'Follow'}</button></div>
                 }
             </div>
