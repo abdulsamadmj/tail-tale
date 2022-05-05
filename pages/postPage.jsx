@@ -2,9 +2,9 @@ import { ReplyIcon } from '@heroicons/react/outline';
 import { collection, doc, getDoc, limit, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
-import Follow from '../components/Follow';
-import GridSavedPosts from '../components/GridSavedPosts';
 import GridTailTales from '../components/GridTailTales';
+import PostModal from '../components/PostModal';
+import TailTaleModal from '../components/TailTaleModal';
 import Post from '../components/Post';
 import { db } from '../firebase';
 
@@ -43,6 +43,25 @@ function postPage() {
                         userImage={post.data().profileImg}
                         username={post.data().username}
                     />
+                    <PostModal key={'post' + post.id}
+                        id={post.id}
+                        uid={post.data().uid}
+                        username={post.data().username}
+                        parentTale={post.data().parentTale}
+                        userImage={post.data().profileImg}
+                        title={post.data().title}
+                        tale={post.data().story}
+                        tailStory={post.data().tailStory}
+                        timestamp={post.data().tailStory}
+                    />
+                    <TailTaleModal key={'tailPost' + post.id}
+                        id={post.id}
+                        uid={post.data().uid}
+                        username={post.data().username}
+                        userImage={post.data().profileImg}
+                        title={post.data().title}
+                        tale={post.data().story}
+                        tailStory={post.data().tailStory} />
                     <div className="border-b border-gray-200 dark:border-gray-700">
                         <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400 ">
 
