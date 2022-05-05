@@ -177,35 +177,39 @@ function Post({ id, uid, username, parentTale, userImage, title, tale, tailStory
 
     async function deletePost() {
 
+        if (!confirm('Are you sure to delete this post?')) {
+            return;
+        } else {
 
-        await onSnapshot(collection(db, 'users', session?.user?.uid, 'followers'),
-            (snapshot) => setFollowers(snapshot.docs)
-        )
+            await onSnapshot(collection(db, 'users', session?.user?.uid, 'followers'),
+                (snapshot) => setFollowers(snapshot.docs)
+            )
 
-        if (!title) {
-            title = ""
+            if (!title) {
+                title = ""
+            }
+            if (!parentTale) {
+                parentTale = ""
+            }
+            await setDoc(doc(db, 'users', session?.user?.uid, 'deletedPosts', id), {
+                uid: session.user.uid,
+                username: session.user.username,
+                title: title,
+                story: tale,
+                parentTale: parentTale,
+                profileImg: session.user.image,
+                tailStory: tailStory,
+                timestamp: timestamp,
+                deletedTimestamp: serverTimestamp()
+            })
+
+            await deleteDoc(doc(db, 'users', session.user.uid, 'posts', id))
+            await deleteDoc(doc(db, 'posts', id))
+
+            await followers.map(async (obj) => (
+                await deleteDoc(doc(db, 'users', obj.id, 'homeFeed', id))
+            ))
         }
-        if (!parentTale) {
-            parentTale = ""
-        }
-        await setDoc(doc(db, 'users', session?.user?.uid, 'deletedPosts', id), {
-            uid: session.user.uid,
-            username: session.user.username,
-            title: title,
-            story: tale,
-            parentTale: parentTale,
-            profileImg: session.user.image,
-            tailStory: tailStory,
-            timestamp: timestamp,
-            deletedTimestamp: serverTimestamp()
-        })
-
-        await deleteDoc(doc(db, 'users', session.user.uid, 'posts', id))
-        await deleteDoc(doc(db, 'posts', id))
-
-        await followers.map(async (obj) => (
-            await deleteDoc(doc(db, 'users', obj.id, 'homeFeed', id))
-        ))
     }
 
     return (
@@ -293,7 +297,7 @@ function Post({ id, uid, username, parentTale, userImage, title, tale, tailStory
                         <h1 className='font-bold text-xl'>{title}</h1>
                     </div>
                 </div>}
-            <div className='p-5 shadow-sm break-all break-normal'>
+            <div className='p-5 shadow-sm break-words'>
                 <p>{tale}</p>
             </div>
             {/* Buttons */}
