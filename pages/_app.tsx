@@ -18,7 +18,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
       <RecoilRoot>
         <Head>
           <title>Tail-Tale</title>
-          <link rel="icon" href="/icon.png" />
+          <link rel="icon" href="/app_icon.png" />
         </Head>
         <Header />
 
